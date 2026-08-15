@@ -28,7 +28,7 @@ async def get_model_performance():
 
         if model_name == "naive_baseline":
             # Calculate naive baseline performance on canonical test split if speeds dataset is available
-            speeds_df = app_state.get("metr_la_speeds") or app_state.get("india_mp_speeds")
+            speeds_df = app_state.get("metr_la_speeds") if app_state.get("metr_la_speeds") is not None else app_state.get("india_mp_speeds")
             if speeds_df is not None:
                 from backend.data.preprocessing import TrafficPreprocessor
                 from backend.evaluation.metrics import naive_baseline

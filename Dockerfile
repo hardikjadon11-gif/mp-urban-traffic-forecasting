@@ -28,10 +28,11 @@ COPY data/ ./data/
 COPY models/ ./models/
 COPY scripts/ ./scripts/
 
-ENV PORT=8000
+ENV PORT=7860
 ENV DEMO_MODE=true
 ENV BACKEND_HOST=0.0.0.0
 
-EXPOSE 8000
+EXPOSE 7860
 
 CMD ["sh", "-c", "python -m uvicorn backend.main:app --host 0.0.0.0 --port ${PORT}"]
+
