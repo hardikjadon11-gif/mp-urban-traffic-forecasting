@@ -1,0 +1,36 @@
+# Secrets & Environment
+.env
+.env*.local
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.vite/
+
+# Python & Virtual Environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+venv/
+.venv/
+env/
+ENV/
+*.sqlite3
+*.db
+
+# IDE & System Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
+
+# Build / Output Artifacts
+build/
+dist/
+mingit/
+mingit.zip
+

@@ -1,0 +1,251 @@
+sensor_id,road_name,city,latitude,longitude,source
+MP_BPL_000,VIP Road (Upper Lake Drive),Bhopal,23.245854,77.426118,india-mp
+MP_BPL_001,Hoshangabad Road Highway,Bhopal,23.235215,77.424862,india-mp
+MP_BPL_002,MP Nagar Zone-1,Bhopal,23.257939,77.369714,india-mp
+MP_BPL_003,MP Nagar Zone-2,Bhopal,23.238499,77.443123,india-mp
+MP_BPL_004,New Market Circle,Bhopal,23.287091,77.410147,india-mp
+MP_BPL_005,Hamidia Road (Station Rd),Bhopal,23.282887,77.401082,india-mp
+MP_BPL_006,BHEL Bypass (Chetak Bridge),Bhopal,23.284682,77.405453,india-mp
+MP_BPL_007,Kolar Road Corridor,Bhopal,23.22019,77.412864,india-mp
+MP_BPL_008,Ayodhya Bypass,Bhopal,23.207327,77.428214,india-mp
+MP_BPL_009,Bairagarh Road,Bhopal,23.289973,77.424711,india-mp
+MP_BPL_010,VIP Road (Upper Lake Drive) (Sec 2),Bhopal,23.276244,77.400547,india-mp
+MP_BPL_011,Hoshangabad Road Highway (Sec 2),Bhopal,23.316755,77.391683,india-mp
+MP_BPL_012,MP Nagar Zone-1 (Sec 2),Bhopal,23.236819,77.431979,india-mp
+MP_BPL_013,MP Nagar Zone-2 (Sec 2),Bhopal,23.217807,77.404334,india-mp
+MP_BPL_014,New Market Circle (Sec 2),Bhopal,23.240926,77.401224,india-mp
+MP_BPL_015,Hamidia Road (Station Rd) (Sec 2),Bhopal,23.243134,77.471641,india-mp
+MP_BPL_016,BHEL Bypass (Chetak Bridge) (Sec 2),Bhopal,23.222903,77.418675,india-mp
+MP_BPL_017,Kolar Road Corridor (Sec 2),Bhopal,23.246715,77.423781,india-mp
+MP_BPL_018,Ayodhya Bypass (Sec 2),Bhopal,23.287344,77.44204,india-mp
+MP_BPL_019,Bairagarh Road (Sec 2),Bhopal,23.267851,77.434694,india-mp
+MP_BPL_020,VIP Road (Upper Lake Drive) (Sec 3),Bhopal,23.218399,77.454939,india-mp
+MP_BPL_021,Hoshangabad Road Highway (Sec 3),Bhopal,23.280465,77.408804,india-mp
+MP_BPL_022,MP Nagar Zone-1 (Sec 3),Bhopal,23.273583,77.429195,india-mp
+MP_BPL_023,MP Nagar Zone-2 (Sec 3),Bhopal,23.246059,77.388134,india-mp
+MP_BPL_024,New Market Circle (Sec 3),Bhopal,23.262741,77.428761,india-mp
+MP_BPL_025,Hamidia Road (Station Rd) (Sec 3),Bhopal,23.213616,77.346066,india-mp
+MP_BPL_026,BHEL Bypass (Chetak Bridge) (Sec 3),Bhopal,23.334281,77.385411,india-mp
+MP_BPL_027,Kolar Road Corridor (Sec 3),Bhopal,23.273606,77.368736,india-mp
+MP_BPL_028,Ayodhya Bypass (Sec 3),Bhopal,23.250484,77.392273,india-mp
+MP_BPL_029,Bairagarh Road (Sec 3),Bhopal,23.260531,77.458284,india-mp
+MP_BPL_030,VIP Road (Upper Lake Drive) (Sec 4),Bhopal,23.288724,77.405818,india-mp
+MP_BPL_031,Hoshangabad Road Highway (Sec 4),Bhopal,23.261654,77.386241,india-mp
+MP_BPL_032,MP Nagar Zone-1 (Sec 4),Bhopal,23.246519,77.383452,india-mp
+MP_BPL_033,MP Nagar Zone-2 (Sec 4),Bhopal,23.269476,77.414225,india-mp
+MP_BPL_034,New Market Circle (Sec 4),Bhopal,23.285135,77.414433,india-mp
+MP_BPL_035,Hamidia Road (Station Rd) (Sec 4),Bhopal,23.213917,77.447814,india-mp
+MP_BPL_036,BHEL Bypass (Chetak Bridge) (Sec 4),Bhopal,23.251452,77.446908,india-mp
+MP_BPL_037,Kolar Road Corridor (Sec 4),Bhopal,23.312234,77.424177,india-mp
+MP_BPL_038,Ayodhya Bypass (Sec 4),Bhopal,23.239673,77.428621,india-mp
+MP_BPL_039,Bairagarh Road (Sec 4),Bhopal,23.277552,77.428908,india-mp
+MP_BPL_040,VIP Road (Upper Lake Drive) (Sec 5),Bhopal,23.314031,77.404594,india-mp
+MP_BPL_041,Hoshangabad Road Highway (Sec 5),Bhopal,23.321588,77.400498,india-mp
+MP_BPL_042,MP Nagar Zone-1 (Sec 5),Bhopal,23.303537,77.405838,india-mp
+MP_BPL_043,MP Nagar Zone-2 (Sec 5),Bhopal,23.255748,77.39415,india-mp
+MP_BPL_044,New Market Circle (Sec 5),Bhopal,23.270186,77.455313,india-mp
+MP_BPL_045,Hamidia Road (Station Rd) (Sec 5),Bhopal,23.238071,77.44673,india-mp
+MP_BPL_046,BHEL Bypass (Chetak Bridge) (Sec 5),Bhopal,23.217782,77.392949,india-mp
+MP_BPL_047,Kolar Road Corridor (Sec 5),Bhopal,23.222682,77.441465,india-mp
+MP_BPL_048,Ayodhya Bypass (Sec 5),Bhopal,23.246596,77.432001,india-mp
+MP_BPL_049,Bairagarh Road (Sec 5),Bhopal,23.25848,77.427525,india-mp
+MP_BPL_050,VIP Road (Upper Lake Drive) (Sec 6),Bhopal,23.282631,77.37624,india-mp
+MP_BPL_051,Hoshangabad Road Highway (Sec 6),Bhopal,23.255337,77.35806,india-mp
+MP_BPL_052,MP Nagar Zone-1 (Sec 6),Bhopal,23.251762,77.439803,india-mp
+MP_BPL_053,MP Nagar Zone-2 (Sec 6),Bhopal,23.241905,77.443471,india-mp
+MP_BPL_054,New Market Circle (Sec 6),Bhopal,23.199093,77.427514,india-mp
+MP_BPL_055,Hamidia Road (Station Rd) (Sec 6),Bhopal,23.26981,77.46077,india-mp
+MP_BPL_056,BHEL Bypass (Chetak Bridge) (Sec 6),Bhopal,23.249975,77.409764,india-mp
+MP_BPL_057,Kolar Road Corridor (Sec 6),Bhopal,23.258852,77.418497,india-mp
+MP_BPL_058,Ayodhya Bypass (Sec 6),Bhopal,23.268592,77.445193,india-mp
+MP_BPL_059,Bairagarh Road (Sec 6),Bhopal,23.241712,77.428625,india-mp
+MP_BPL_060,VIP Road (Upper Lake Drive) (Sec 7),Bhopal,23.251848,77.423625,india-mp
+MP_BPL_061,Hoshangabad Road Highway (Sec 7),Bhopal,23.295644,77.336205,india-mp
+MP_BPL_062,MP Nagar Zone-1 (Sec 7),Bhopal,23.264628,77.40938,india-mp
+MP_BPL_063,MP Nagar Zone-2 (Sec 7),Bhopal,23.295145,77.40922,india-mp
+MP_BPL_064,New Market Circle (Sec 7),Bhopal,23.299527,77.412314,india-mp
+MP_BPL_065,Hamidia Road (Station Rd) (Sec 7),Bhopal,23.234459,77.396357,india-mp
+MP_BPL_066,BHEL Bypass (Chetak Bridge) (Sec 7),Bhopal,23.282271,77.384276,india-mp
+MP_BPL_067,Kolar Road Corridor (Sec 7),Bhopal,23.250551,77.428686,india-mp
+MP_BPL_068,Ayodhya Bypass (Sec 7),Bhopal,23.228368,77.40013,india-mp
+MP_BPL_069,Bairagarh Road (Sec 7),Bhopal,23.227605,77.422304,india-mp
+MP_IND_000,MG Road (Mahatma Gandhi Rd),Indore,22.733084,75.849197,india-mp
+MP_IND_001,AB Road (Agra-Bombay Rd),Indore,22.793917,75.852104,india-mp
+MP_IND_002,Vijay Nagar Square (BRTS),Indore,22.714185,75.859827,india-mp
+MP_IND_003,Ring Road (Radisson Square),Indore,22.719848,75.852695,india-mp
+MP_IND_004,Palasia Square,Indore,22.706458,75.853022,india-mp
+MP_IND_005,Rajwada Palace Circle,Indore,22.752331,75.850081,india-mp
+MP_IND_006,Super Corridor (Airport Rd),Indore,22.723235,75.867342,india-mp
+MP_IND_007,Indore Bypass Highway,Indore,22.703553,75.841091,india-mp
+MP_IND_008,Bhawarkua Square,Indore,22.763489,75.835608,india-mp
+MP_IND_009,Khajrana Road,Indore,22.689259,75.854003,india-mp
+MP_IND_010,MG Road (Mahatma Gandhi Rd) (Sec 2),Indore,22.72335,75.879599,india-mp
+MP_IND_011,AB Road (Agra-Bombay Rd) (Sec 2),Indore,22.669446,75.854047,india-mp
+MP_IND_012,Vijay Nagar Square (BRTS) (Sec 2),Indore,22.771297,75.844521,india-mp
+MP_IND_013,Ring Road (Radisson Square) (Sec 2),Indore,22.740628,75.81943,india-mp
+MP_IND_014,Palasia Square (Sec 2),Indore,22.775989,75.833985,india-mp
+MP_IND_015,Rajwada Palace Circle (Sec 2),Indore,22.770011,75.817319,india-mp
+MP_IND_016,Super Corridor (Airport Rd) (Sec 2),Indore,22.707196,75.872907,india-mp
+MP_IND_017,Indore Bypass Highway (Sec 2),Indore,22.704181,75.838138,india-mp
+MP_IND_018,Bhawarkua Square (Sec 2),Indore,22.70615,75.900607,india-mp
+MP_IND_019,Khajrana Road (Sec 2),Indore,22.706565,75.844323,india-mp
+MP_IND_020,MG Road (Mahatma Gandhi Rd) (Sec 3),Indore,22.734518,75.822438,india-mp
+MP_IND_021,AB Road (Agra-Bombay Rd) (Sec 3),Indore,22.733089,75.869917,india-mp
+MP_IND_022,Vijay Nagar Square (BRTS) (Sec 3),Indore,22.706859,75.81272,india-mp
+MP_IND_023,Ring Road (Radisson Square) (Sec 3),Indore,22.667768,75.840537,india-mp
+MP_IND_024,Palasia Square (Sec 3),Indore,22.701487,75.910353,india-mp
+MP_IND_025,Rajwada Palace Circle (Sec 3),Indore,22.734016,75.858246,india-mp
+MP_IND_026,Super Corridor (Airport Rd) (Sec 3),Indore,22.725477,75.912338,india-mp
+MP_IND_027,Indore Bypass Highway (Sec 3),Indore,22.765652,75.860436,india-mp
+MP_IND_028,Bhawarkua Square (Sec 3),Indore,22.716745,75.835286,india-mp
+MP_IND_029,Khajrana Road (Sec 3),Indore,22.683036,75.870221,india-mp
+MP_IND_030,MG Road (Mahatma Gandhi Rd) (Sec 4),Indore,22.690402,75.853042,india-mp
+MP_IND_031,AB Road (Agra-Bombay Rd) (Sec 4),Indore,22.759728,75.863,india-mp
+MP_IND_032,Vijay Nagar Square (BRTS) (Sec 4),Indore,22.718909,75.885118,india-mp
+MP_IND_033,Ring Road (Radisson Square) (Sec 4),Indore,22.695737,75.791122,india-mp
+MP_IND_034,Palasia Square (Sec 4),Indore,22.738063,75.778016,india-mp
+MP_IND_035,Rajwada Palace Circle (Sec 4),Indore,22.700356,75.856374,india-mp
+MP_IND_036,Super Corridor (Airport Rd) (Sec 4),Indore,22.705205,75.858244,india-mp
+MP_IND_037,Indore Bypass Highway (Sec 4),Indore,22.695776,75.832476,india-mp
+MP_IND_038,Bhawarkua Square (Sec 4),Indore,22.698362,75.893855,india-mp
+MP_IND_039,Khajrana Road (Sec 4),Indore,22.714749,75.881088,india-mp
+MP_IND_040,MG Road (Mahatma Gandhi Rd) (Sec 5),Indore,22.728943,75.905553,india-mp
+MP_IND_041,AB Road (Agra-Bombay Rd) (Sec 5),Indore,22.648842,75.866513,india-mp
+MP_IND_042,Vijay Nagar Square (BRTS) (Sec 5),Indore,22.746805,75.823258,india-mp
+MP_IND_043,Ring Road (Radisson Square) (Sec 5),Indore,22.759449,75.847415,india-mp
+MP_IND_044,Palasia Square (Sec 5),Indore,22.735534,75.865747,india-mp
+MP_IND_045,Rajwada Palace Circle (Sec 5),Indore,22.738587,75.914478,india-mp
+MP_IND_046,Super Corridor (Airport Rd) (Sec 5),Indore,22.740364,75.79976,india-mp
+MP_IND_047,Indore Bypass Highway (Sec 5),Indore,22.68446,75.836482,india-mp
+MP_IND_048,Bhawarkua Square (Sec 5),Indore,22.74545,75.870908,india-mp
+MP_IND_049,Khajrana Road (Sec 5),Indore,22.656397,75.831246,india-mp
+MP_IND_050,MG Road (Mahatma Gandhi Rd) (Sec 6),Indore,22.705478,75.875214,india-mp
+MP_IND_051,AB Road (Agra-Bombay Rd) (Sec 6),Indore,22.704517,75.866954,india-mp
+MP_IND_052,Vijay Nagar Square (BRTS) (Sec 6),Indore,22.711281,75.839225,india-mp
+MP_IND_053,Ring Road (Radisson Square) (Sec 6),Indore,22.754313,75.842359,india-mp
+MP_IND_054,Palasia Square (Sec 6),Indore,22.753533,75.845215,india-mp
+MP_IND_055,Rajwada Palace Circle (Sec 6),Indore,22.685754,75.894431,india-mp
+MP_IND_056,Super Corridor (Airport Rd) (Sec 6),Indore,22.711549,75.87073,india-mp
+MP_IND_057,Indore Bypass Highway (Sec 6),Indore,22.744029,75.867356,india-mp
+MP_IND_058,Bhawarkua Square (Sec 6),Indore,22.690495,75.882056,india-mp
+MP_IND_059,Khajrana Road (Sec 6),Indore,22.719717,75.880294,india-mp
+MP_IND_060,MG Road (Mahatma Gandhi Rd) (Sec 7),Indore,22.745102,75.875694,india-mp
+MP_IND_061,AB Road (Agra-Bombay Rd) (Sec 7),Indore,22.761273,75.87922,india-mp
+MP_IND_062,Vijay Nagar Square (BRTS) (Sec 7),Indore,22.725958,75.84148,india-mp
+MP_IND_063,Ring Road (Radisson Square) (Sec 7),Indore,22.760373,75.8967,india-mp
+MP_IND_064,Palasia Square (Sec 7),Indore,22.720099,75.826052,india-mp
+MP_IND_065,Rajwada Palace Circle (Sec 7),Indore,22.707009,75.860287,india-mp
+MP_IND_066,Super Corridor (Airport Rd) (Sec 7),Indore,22.715233,75.869258,india-mp
+MP_IND_067,Indore Bypass Highway (Sec 7),Indore,22.692609,75.806241,india-mp
+MP_IND_068,Bhawarkua Square (Sec 7),Indore,22.713834,75.857857,india-mp
+MP_IND_069,Khajrana Road (Sec 7),Indore,22.754049,75.809331,india-mp
+MP_IND_070,MG Road (Mahatma Gandhi Rd) (Sec 8),Indore,22.756375,75.870369,india-mp
+MP_IND_071,AB Road (Agra-Bombay Rd) (Sec 8),Indore,22.682984,75.820349,india-mp
+MP_IND_072,Vijay Nagar Square (BRTS) (Sec 8),Indore,22.743337,75.817645,india-mp
+MP_IND_073,Ring Road (Radisson Square) (Sec 8),Indore,22.712057,75.814817,india-mp
+MP_IND_074,Palasia Square (Sec 8),Indore,22.69033,75.894962,india-mp
+MP_IND_075,Rajwada Palace Circle (Sec 8),Indore,22.717239,75.874495,india-mp
+MP_IND_076,Super Corridor (Airport Rd) (Sec 8),Indore,22.705323,75.916172,india-mp
+MP_IND_077,Indore Bypass Highway (Sec 8),Indore,22.662893,75.853407,india-mp
+MP_IND_078,Bhawarkua Square (Sec 8),Indore,22.717761,75.862443,india-mp
+MP_IND_079,Khajrana Road (Sec 8),Indore,22.71852,75.863288,india-mp
+MP_GWL_000,City Center Arterial Rd,Gwalior,26.246738,78.169009,india-mp
+MP_GWL_001,Lashkar Main Market,Gwalior,26.180098,78.17168,india-mp
+MP_GWL_002,Maharaj Bada Circle,Gwalior,26.224656,78.179506,india-mp
+MP_GWL_003,Gwalior Airport Road,Gwalior,26.244704,78.169803,india-mp
+MP_GWL_004,City Center Arterial Rd (Sec 2),Gwalior,26.195059,78.17034,india-mp
+MP_GWL_005,Lashkar Main Market (Sec 2),Gwalior,26.218386,78.155747,india-mp
+MP_GWL_006,Maharaj Bada Circle (Sec 2),Gwalior,26.224711,78.185827,india-mp
+MP_GWL_007,Gwalior Airport Road (Sec 2),Gwalior,26.166957,78.225486,india-mp
+MP_GWL_008,City Center Arterial Rd (Sec 3),Gwalior,26.207367,78.180998,india-mp
+MP_GWL_009,Lashkar Main Market (Sec 3),Gwalior,26.196969,78.217139,india-mp
+MP_GWL_010,Maharaj Bada Circle (Sec 3),Gwalior,26.225739,78.204966,india-mp
+MP_GWL_011,Gwalior Airport Road (Sec 3),Gwalior,26.204093,78.185468,india-mp
+MP_GWL_012,City Center Arterial Rd (Sec 4),Gwalior,26.220093,78.15218,india-mp
+MP_GWL_013,Lashkar Main Market (Sec 4),Gwalior,26.224905,78.186493,india-mp
+MP_GWL_014,Maharaj Bada Circle (Sec 4),Gwalior,26.22491,78.195548,india-mp
+MP_GWL_015,Gwalior Airport Road (Sec 4),Gwalior,26.1795,78.196959,india-mp
+MP_GWL_016,City Center Arterial Rd (Sec 5),Gwalior,26.222658,78.163444,india-mp
+MP_GWL_017,Lashkar Main Market (Sec 5),Gwalior,26.236473,78.160508,india-mp
+MP_GWL_018,Maharaj Bada Circle (Sec 5),Gwalior,26.223788,78.162513,india-mp
+MP_GWL_019,Gwalior Airport Road (Sec 5),Gwalior,26.236756,78.148092,india-mp
+MP_GWL_020,City Center Arterial Rd (Sec 6),Gwalior,26.217746,78.187188,india-mp
+MP_GWL_021,Lashkar Main Market (Sec 6),Gwalior,26.213343,78.172299,india-mp
+MP_GWL_022,Maharaj Bada Circle (Sec 6),Gwalior,26.233582,78.22451,india-mp
+MP_GWL_023,Gwalior Airport Road (Sec 6),Gwalior,26.2198,78.187106,india-mp
+MP_GWL_024,City Center Arterial Rd (Sec 7),Gwalior,26.207426,78.175098,india-mp
+MP_GWL_025,Lashkar Main Market (Sec 7),Gwalior,26.247471,78.208518,india-mp
+MP_GWL_026,Maharaj Bada Circle (Sec 7),Gwalior,26.205929,78.149181,india-mp
+MP_GWL_027,Gwalior Airport Road (Sec 7),Gwalior,26.219302,78.183907,india-mp
+MP_GWL_028,City Center Arterial Rd (Sec 8),Gwalior,26.229665,78.193247,india-mp
+MP_GWL_029,Lashkar Main Market (Sec 8),Gwalior,26.255174,78.173199,india-mp
+MP_GWL_030,Maharaj Bada Circle (Sec 8),Gwalior,26.218848,78.19152,india-mp
+MP_GWL_031,Gwalior Airport Road (Sec 8),Gwalior,26.231562,78.203665,india-mp
+MP_GWL_032,City Center Arterial Rd (Sec 9),Gwalior,26.229372,78.169863,india-mp
+MP_GWL_033,Lashkar Main Market (Sec 9),Gwalior,26.255963,78.195287,india-mp
+MP_GWL_034,Maharaj Bada Circle (Sec 9),Gwalior,26.218844,78.170952,india-mp
+MP_JBP_000,Narmada Road Highway,Jabalpur,23.221513,79.990652,india-mp
+MP_JBP_001,Wright Town Circle,Jabalpur,23.18691,80.008228,india-mp
+MP_JBP_002,Civic Center Market,Jabalpur,23.203399,80.00608,india-mp
+MP_JBP_003,Gorakhpur Main Rd,Jabalpur,23.169914,80.010053,india-mp
+MP_JBP_004,Narmada Road Highway (Sec 2),Jabalpur,23.201656,79.970028,india-mp
+MP_JBP_005,Wright Town Circle (Sec 2),Jabalpur,23.130494,79.983097,india-mp
+MP_JBP_006,Civic Center Market (Sec 2),Jabalpur,23.175614,80.026497,india-mp
+MP_JBP_007,Gorakhpur Main Rd (Sec 2),Jabalpur,23.140916,79.980821,india-mp
+MP_JBP_008,Narmada Road Highway (Sec 3),Jabalpur,23.184564,79.980464,india-mp
+MP_JBP_009,Wright Town Circle (Sec 3),Jabalpur,23.17549,79.999678,india-mp
+MP_JBP_010,Civic Center Market (Sec 3),Jabalpur,23.1611,80.003565,india-mp
+MP_JBP_011,Gorakhpur Main Rd (Sec 3),Jabalpur,23.179196,80.020764,india-mp
+MP_JBP_012,Narmada Road Highway (Sec 4),Jabalpur,23.178715,79.980982,india-mp
+MP_JBP_013,Wright Town Circle (Sec 4),Jabalpur,23.159613,79.988171,india-mp
+MP_JBP_014,Civic Center Market (Sec 4),Jabalpur,23.195103,79.980854,india-mp
+MP_JBP_015,Gorakhpur Main Rd (Sec 4),Jabalpur,23.180279,79.970756,india-mp
+MP_JBP_016,Narmada Road Highway (Sec 5),Jabalpur,23.172117,79.949256,india-mp
+MP_JBP_017,Wright Town Circle (Sec 5),Jabalpur,23.20166,79.94343,india-mp
+MP_JBP_018,Civic Center Market (Sec 5),Jabalpur,23.179419,79.968736,india-mp
+MP_JBP_019,Gorakhpur Main Rd (Sec 5),Jabalpur,23.162702,79.98775,india-mp
+MP_JBP_020,Narmada Road Highway (Sec 6),Jabalpur,23.193581,79.990518,india-mp
+MP_JBP_021,Wright Town Circle (Sec 6),Jabalpur,23.172042,80.032713,india-mp
+MP_JBP_022,Civic Center Market (Sec 6),Jabalpur,23.165108,79.98451,india-mp
+MP_JBP_023,Gorakhpur Main Rd (Sec 6),Jabalpur,23.202862,79.985306,india-mp
+MP_JBP_024,Narmada Road Highway (Sec 7),Jabalpur,23.21061,80.004829,india-mp
+MP_JBP_025,Wright Town Circle (Sec 7),Jabalpur,23.187188,79.979592,india-mp
+MP_JBP_026,Civic Center Market (Sec 7),Jabalpur,23.185105,79.949603,india-mp
+MP_JBP_027,Gorakhpur Main Rd (Sec 7),Jabalpur,23.168009,79.980972,india-mp
+MP_JBP_028,Narmada Road Highway (Sec 8),Jabalpur,23.16084,79.998655,india-mp
+MP_JBP_029,Wright Town Circle (Sec 8),Jabalpur,23.178225,80.009859,india-mp
+MP_JBP_030,Civic Center Market (Sec 8),Jabalpur,23.226437,79.960799,india-mp
+MP_JBP_031,Gorakhpur Main Rd (Sec 8),Jabalpur,23.192426,79.998884,india-mp
+MP_JBP_032,Narmada Road Highway (Sec 9),Jabalpur,23.161921,79.967374,india-mp
+MP_JBP_033,Wright Town Circle (Sec 9),Jabalpur,23.163086,79.95857,india-mp
+MP_JBP_034,Civic Center Market (Sec 9),Jabalpur,23.181873,79.995087,india-mp
+MP_UJN_000,Mahakal Lok Corridor Road,Ujjain,23.184755,75.75982,india-mp
+MP_UJN_001,Dewas Road Highway,Ujjain,23.150211,75.789133,india-mp
+MP_UJN_002,Freeganj Main Market Rd,Ujjain,23.179957,75.802813,india-mp
+MP_UJN_003,Nanakheda Bus Stand Circle,Ujjain,23.171085,75.772073,india-mp
+MP_UJN_004,Kshipra Bridge Ghat Road,Ujjain,23.175291,75.786276,india-mp
+MP_UJN_005,Agar Road Corridor,Ujjain,23.161062,75.792137,india-mp
+MP_UJN_006,Mahakal Lok Corridor Road (Sec 2),Ujjain,23.181531,75.79191,india-mp
+MP_UJN_007,Dewas Road Highway (Sec 2),Ujjain,23.197788,75.788889,india-mp
+MP_UJN_008,Freeganj Main Market Rd (Sec 2),Ujjain,23.164306,75.798627,india-mp
+MP_UJN_009,Nanakheda Bus Stand Circle (Sec 2),Ujjain,23.197749,75.784983,india-mp
+MP_UJN_010,Kshipra Bridge Ghat Road (Sec 2),Ujjain,23.179625,75.768266,india-mp
+MP_UJN_011,Agar Road Corridor (Sec 2),Ujjain,23.16018,75.775125,india-mp
+MP_UJN_012,Mahakal Lok Corridor Road (Sec 3),Ujjain,23.18728,75.781261,india-mp
+MP_UJN_013,Dewas Road Highway (Sec 3),Ujjain,23.195754,75.790555,india-mp
+MP_UJN_014,Freeganj Main Market Rd (Sec 3),Ujjain,23.165208,75.812639,india-mp
+MP_UJN_015,Nanakheda Bus Stand Circle (Sec 3),Ujjain,23.190135,75.810695,india-mp
+MP_UJN_016,Kshipra Bridge Ghat Road (Sec 3),Ujjain,23.178069,75.753125,india-mp
+MP_UJN_017,Agar Road Corridor (Sec 3),Ujjain,23.201746,75.797181,india-mp
+MP_UJN_018,Mahakal Lok Corridor Road (Sec 4),Ujjain,23.158534,75.777957,india-mp
+MP_UJN_019,Dewas Road Highway (Sec 4),Ujjain,23.179311,75.795119,india-mp
+MP_UJN_020,Freeganj Main Market Rd (Sec 4),Ujjain,23.171837,75.772524,india-mp
+MP_UJN_021,Nanakheda Bus Stand Circle (Sec 4),Ujjain,23.168872,75.777033,india-mp
+MP_UJN_022,Kshipra Bridge Ghat Road (Sec 4),Ujjain,23.177593,75.788698,india-mp
+MP_UJN_023,Agar Road Corridor (Sec 4),Ujjain,23.2002,75.813113,india-mp
+MP_UJN_024,Mahakal Lok Corridor Road (Sec 5),Ujjain,23.168727,75.794561,india-mp
+MP_UJN_025,Dewas Road Highway (Sec 5),Ujjain,23.198778,75.777096,india-mp
+MP_UJN_026,Freeganj Main Market Rd (Sec 5),Ujjain,23.181222,75.768839,india-mp
+MP_UJN_027,Nanakheda Bus Stand Circle (Sec 5),Ujjain,23.160635,75.768884,india-mp
+MP_UJN_028,Kshipra Bridge Ghat Road (Sec 5),Ujjain,23.17037,75.796652,india-mp
+MP_UJN_029,Agar Road Corridor (Sec 5),Ujjain,23.172258,75.779641,india-mp

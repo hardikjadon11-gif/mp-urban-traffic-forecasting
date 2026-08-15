@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: smart-traffic-forecasting
+    env: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: BACKEND_HOST
+        value: "0.0.0.0"
+      - key: FRONTEND_URL
+        value: "*"
+
