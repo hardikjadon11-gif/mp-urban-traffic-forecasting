@@ -33,4 +33,6 @@ build/
 dist/
 mingit/
 mingit.zip
+public_url.txt
+
 
