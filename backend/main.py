@@ -97,7 +97,9 @@ async def lifespan(app: FastAPI):
         logger.info(f"Uber Movement loaded: {uber_info.n_records} records")
 
     except Exception as e:
-        logger.warning(f"Failed to load datasets: {e}")
+        import traceback
+        logger.error(f"CRITICAL: Failed to load datasets — sensor list will be empty! Error: {e}")
+        logger.error(traceback.format_exc())
 
     # Initialize preprocessor
     from backend.data.preprocessing import TrafficPreprocessor
@@ -141,6 +143,8 @@ from backend.api.forecast import router as forecast_router
 from backend.api.training import router as training_router
 from backend.api.evaluation import router as evaluation_router
 from backend.api.fusion import router as fusion_router
+from backend.api.simulation import router as simulation_router
+from backend.api.feature_importance import router as feature_importance_router
 
 app.include_router(health_router, prefix="/api", tags=["Health"])
 app.include_router(datasets_router, prefix="/api", tags=["Datasets"])
@@ -150,6 +154,8 @@ app.include_router(forecast_router, prefix="/api", tags=["Forecast"])
 app.include_router(training_router, prefix="/api", tags=["Training"])
 app.include_router(evaluation_router, prefix="/api", tags=["Evaluation"])
 app.include_router(fusion_router, prefix="/api", tags=["Data Fusion"])
+app.include_router(simulation_router, prefix="/api", tags=["Simulation"])
+app.include_router(feature_importance_router, prefix="/api", tags=["Feature Importance"])
 
 
 # ── Serve Built Frontend SPA (Production Single-Server Packaging) ────────
