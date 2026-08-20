@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import api from '../services/api';
@@ -34,6 +35,13 @@ const REGION_VIEWPORTS = {
   'pems-bay': { name: 'Bay Area Region', lat: 37.55, lon: -122.20, zoom: 9, icon: '🌉' },
 };
 
+// Model comparison colors
+const MODEL_COLORS = {
+  stgcn: { color: '#00d4ff', label: 'STGCN', dash: '' },
+  lstm: { color: '#a78bfa', label: 'LSTM', dash: '6,3' },
+  xgboost: { color: '#10b981', label: 'XGBoost', dash: '3,3' },
+};
+
 export default function Dashboard({ demoMode }) {
   const [datasetSource, setDatasetSource] = useState('india-mp');
   const [trafficData, setTrafficData] = useState(null);
@@ -51,6 +59,27 @@ export default function Dashboard({ demoMode }) {
   const [cityNotice, setCityNotice] = useState(null);
   const [showCoverageOverlay, setShowCoverageOverlay] = useState(true);
 
+  // Feature 1: Model Comparison Toggle
+  const [compareModels, setCompareModels] = useState({ stgcn: true, lstm: false, xgboost: false });
+  const [multiModelData, setMultiModelData] = useState(null);
+
+  // Feature 2: Disruption Simulator
+  const [simResult, setSimResult] = useState(null);
+  const [simLoading, setSimLoading] = useState(false);
+  const [simDuration, setSimDuration] = useState(30);
+  const simMarkersRef = useRef([]);
+
+  // Feature 3: Feature Importance
+  const [featureImportance, setFeatureImportance] = useState(null);
+  const [showFeatureImportance, setShowFeatureImportance] = useState(false);
+
+  // Feature 5: Last Updated / Live Feel
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const autoRefreshRef = useRef(null);
+
+  // Feature 6: City-Level Summary
+  const [citySummary, setCitySummary] = useState(null);
+
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
@@ -65,6 +94,7 @@ export default function Dashboard({ demoMode }) {
       setTrafficData(data);
       setError(null);
       setLoading(false);
+      setLastUpdated(new Date());
     } catch (e) {
       setError(e.message);
       setLoading(false);
@@ -76,11 +106,39 @@ export default function Dashboard({ demoMode }) {
     api.getModelPerformance().then(perf => setModelPerf(perf)).catch(() => {});
   }, [datasetSource, demoTimeIndex, horizon, selectedModel, fetchTraffic]);
 
+  // Feature 6: Fetch city summary when india-mp is selected
+  useEffect(() => {
+    if (datasetSource === 'india-mp') {
+      api.getCitySummary(demoTimeIndex).then(data => setCitySummary(data)).catch(() => {});
+    } else {
+      setCitySummary(null);
+    }
+  }, [datasetSource, demoTimeIndex]);
+
+  // Feature 5: Auto-refresh every 60 seconds
+  useEffect(() => {
+    autoRefreshRef.current = setInterval(() => {
+      fetchTraffic(datasetSource, demoTimeIndex, horizon, selectedModel);
+      if (datasetSource === 'india-mp') {
+        api.getCitySummary(demoTimeIndex).then(data => setCitySummary(data)).catch(() => {});
+      }
+    }, 60000);
+    return () => clearInterval(autoRefreshRef.current);
+  }, [datasetSource, demoTimeIndex, horizon, selectedModel, fetchTraffic]);
+
+  const handleManualRefresh = () => {
+    fetchTraffic(datasetSource, demoTimeIndex, horizon, selectedModel);
+    if (datasetSource === 'india-mp') {
+      api.getCitySummary(demoTimeIndex).then(data => setCitySummary(data)).catch(() => {});
+    }
+  };
+
   const handleDatasetChange = (newSource) => {
     setDatasetSource(newSource);
     setSelectedSensor(null);
     setForecast(null);
     setCityNotice(null);
+    handleResetSimulation();
     const newViewport = REGION_VIEWPORTS[newSource] || REGION_VIEWPORTS['india-mp'];
     setActiveArea(newViewport);
     if (mapInstanceRef.current) {
@@ -199,6 +257,55 @@ export default function Dashboard({ demoMode }) {
     }
   };
 
+  // Feature 2: Disruption simulation map overlay
+  const clearSimMarkers = () => {
+    simMarkersRef.current.forEach(m => m.remove());
+    simMarkersRef.current = [];
+  };
+
+  useEffect(() => {
+    if (!mapInstanceRef.current || !simResult || !simResult.affected_sensors) {
+      clearSimMarkers();
+      return;
+    }
+    const map = mapInstanceRef.current;
+    clearSimMarkers();
+
+    // Source sensor: pulsing red
+    const src = simResult.source_sensor;
+    if (src) {
+      const srcMarker = L.circleMarker([src.latitude, src.longitude], {
+        radius: 14,
+        fillColor: '#ef4444',
+        color: '#ffffff',
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 0.9,
+        className: 'sim-pulse-marker',
+      }).addTo(map);
+      srcMarker.bindPopup(`<div style="font-family:Inter,sans-serif;padding:4px"><strong style="color:#ef4444">⚠ SIMULATED INCIDENT</strong><br/>${src.road_name}<br/>Speed: ${src.original_speed} → ${src.simulated_speed} mph</div>`);
+      simMarkersRef.current.push(srcMarker);
+    }
+
+    // Affected sensors: orange with varying opacity
+    simResult.affected_sensors.forEach(sensor => {
+      const intensity = Math.min(1, sensor.speed_reduction_pct / 50);
+      const color = intensity > 0.5 ? '#ef4444' : '#f59e0b';
+      const marker = L.circleMarker([sensor.latitude, sensor.longitude], {
+        radius: 9 + intensity * 4,
+        fillColor: color,
+        color: color,
+        weight: 2,
+        opacity: 0.9,
+        fillOpacity: 0.4 + intensity * 0.4,
+      }).addTo(map);
+      marker.bindPopup(`<div style="font-family:Inter,sans-serif;padding:4px"><strong>${sensor.road_name}</strong><br/>Speed: ${sensor.original_speed} → ${sensor.reduced_speed} mph<br/><span style="color:${color}">-${sensor.speed_reduction_pct}% reduction</span></div>`);
+      simMarkersRef.current.push(marker);
+    });
+
+    return () => clearSimMarkers();
+  }, [simResult]);
+
   // Render Map Sensor Markers & Reference City Markers
   useEffect(() => {
     if (!mapInstanceRef.current || !trafficData?.sensors) return;
@@ -286,6 +393,9 @@ export default function Dashboard({ demoMode }) {
     if (!sensorId) return;
     setSelectedSensor(sensorId);
     setCityNotice(null);
+    setMultiModelData(null);
+    setFeatureImportance(null);
+    setShowFeatureImportance(false);
 
     if (lat && lon && mapInstanceRef.current) {
       mapInstanceRef.current.flyTo([lat, lon], 14, { duration: 1.0 });
@@ -302,6 +412,42 @@ export default function Dashboard({ demoMode }) {
     } catch (e) {
       console.error('Forecast error:', e);
     }
+
+    // Feature 3: Fetch feature importance
+    api.getFeatureImportance(sensorId, selectedModel, demoTimeIndex)
+      .then(data => setFeatureImportance(data))
+      .catch(() => {});
+  };
+
+  // Feature 1: Fetch multi-model data when comparison toggles change
+  useEffect(() => {
+    const activeCount = Object.values(compareModels).filter(Boolean).length;
+    if (activeCount > 1 && selectedSensor) {
+      api.getMultiModelForecast(selectedSensor, demoTimeIndex)
+        .then(data => setMultiModelData(data))
+        .catch(() => setMultiModelData(null));
+    } else {
+      setMultiModelData(null);
+    }
+  }, [compareModels, selectedSensor, demoTimeIndex]);
+
+  // Feature 2: Disruption simulation handlers
+  const handleSimulate = async () => {
+    if (!selectedSensor) return;
+    setSimLoading(true);
+    try {
+      const result = await api.simulateDisruption(selectedSensor, simDuration, datasetSource, demoTimeIndex);
+      setSimResult(result);
+    } catch (e) {
+      console.error('Simulation error:', e);
+    }
+    setSimLoading(false);
+  };
+
+  const handleResetSimulation = () => {
+    setSimResult(null);
+    clearSimMarkers();
+    api.resetSimulation().catch(() => {});
   };
 
   const summary = trafficData?.summary || { free_flow: 0, moderate: 0, congested: 0, total: 0 };
@@ -309,21 +455,117 @@ export default function Dashboard({ demoMode }) {
   const allSensorsList = trafficData?.sensors || [];
   const stgcnMetrics = modelPerf?.models?.find(m => m.model_name === 'stgcn');
 
+  // Multi-model chart rendering helper
+  const renderComparisonChart = () => {
+    const activeModels = Object.entries(compareModels).filter(([, v]) => v).map(([k]) => k);
+    const isMultiModel = activeModels.length > 1 && multiModelData?.models;
+
+    // Determine data source
+    let chartDataSets = {};
+    if (isMultiModel) {
+      activeModels.forEach(m => {
+        if (multiModelData.models[m]) {
+          chartDataSets[m] = multiModelData.models[m].actual_vs_predicted;
+        }
+      });
+    } else if (forecast?.actual_vs_predicted) {
+      chartDataSets[selectedModel] = forecast.actual_vs_predicted;
+    }
+
+    if (Object.keys(chartDataSets).length === 0) {
+      return <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>No trend data</p>;
+    }
+
+    // Get all values for scale
+    const allVals = [];
+    Object.values(chartDataSets).forEach(data => {
+      data.forEach(d => {
+        if (d.actual != null) allVals.push(d.actual);
+        if (d.predicted != null) allVals.push(d.predicted);
+        if (d.predicted_upper != null) allVals.push(d.predicted_upper);
+        if (d.predicted_lower != null) allVals.push(d.predicted_lower);
+      });
+    });
+
+    if (allVals.length === 0) return <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>No trend data</p>;
+
+    const minV = Math.min(...allVals) - 5;
+    const maxV = Math.max(...allVals) + 5;
+    const range = maxV - minV || 1;
+
+    // Use the first dataset for actual line and x-axis
+    const primaryData = Object.values(chartDataSets)[0];
+    const xStep = 400 / Math.max(primaryData.length - 1, 1);
+    const toY = (v) => 150 - ((v - minV) / range) * 140;
+
+    // Actual line (same for all models — use primary)
+    const actualLine = primaryData.map((d, i) => d.actual != null ? `${i * xStep},${toY(d.actual)}` : null).filter(Boolean).join(' ');
+
+    return (
+      <svg viewBox="0 0 400 150" className="speed-chart-svg">
+        {/* Confidence band for each model */}
+        {Object.entries(chartDataSets).map(([modelKey, data]) => {
+          const bandPoints = [];
+          const upperPoints = [];
+          const lowerPoints = [];
+          data.forEach((d, i) => {
+            if (d.predicted_upper != null && d.predicted_lower != null) {
+              upperPoints.push({ x: i * xStep, y: toY(d.predicted_upper) });
+              lowerPoints.push({ x: i * xStep, y: toY(d.predicted_lower) });
+            }
+          });
+          if (upperPoints.length > 1) {
+            const bandPath = upperPoints.map(p => `${p.x},${p.y}`).join(' ') + ' ' +
+              lowerPoints.reverse().map(p => `${p.x},${p.y}`).join(' ');
+            const bandColor = MODEL_COLORS[modelKey]?.color || '#f59e0b';
+            return <polygon key={`band-${modelKey}`} points={bandPath} fill={bandColor} fillOpacity="0.1" stroke="none" />;
+          }
+          return null;
+        })}
+
+        {/* Actual speed line */}
+        <polyline points={actualLine} fill="none" stroke="#00d4ff" strokeWidth="2.5" opacity="0.9"/>
+
+        {/* Predicted lines for each active model */}
+        {Object.entries(chartDataSets).map(([modelKey, data]) => {
+          const mc = MODEL_COLORS[modelKey] || { color: '#f59e0b', dash: '' };
+          const predLine = data.map((d, i) => d.predicted != null ? `${i * xStep},${toY(d.predicted)}` : null).filter(Boolean).join(' ');
+          if (!predLine) return null;
+          return (
+            <polyline
+              key={`pred-${modelKey}`}
+              points={predLine}
+              fill="none"
+              stroke={isMultiModel ? mc.color : '#f59e0b'}
+              strokeWidth="2"
+              strokeDasharray={isMultiModel ? mc.dash : '6,4'}
+              opacity="0.85"
+            />
+          );
+        })}
+      </svg>
+    );
+  };
+
   if (loading) {
     return (
-      <div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="page-header">
           <h1>Smart Traffic Congestion Forecasting</h1>
           <p>AI-powered prediction of urban traffic conditions using spatio-temporal machine learning.</p>
         </div>
         <div className="loading-spinner"></div>
         <p className="loading-text">Loading Madhya Pradesh traffic network dataset...</p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="dashboard fade-in">
+    <div className="dashboard">
       {/* Hero Section */}
       <div className="page-header hero-section card">
         <div className="hero-content">
@@ -354,6 +596,21 @@ export default function Dashboard({ demoMode }) {
             <span className="status-item-label">FORECAST</span>
             <span className="status-item-val">30 / 60 min</span>
           </div>
+          {/* Feature 5: Last Updated */}
+          <div className="status-divider"></div>
+          <div className="status-item">
+            <span className="status-item-label">LAST UPDATED</span>
+            <span className="status-item-val" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {lastUpdated ? lastUpdated.toLocaleTimeString() : '—'}
+              <button
+                className="refresh-btn"
+                onClick={handleManualRefresh}
+                title="Refresh data now"
+              >
+                🔄
+              </button>
+            </span>
+          </div>
         </div>
       </div>
 
@@ -381,30 +638,79 @@ export default function Dashboard({ demoMode }) {
         </div>
       )}
 
+      {/* Feature 6: City-Level Summary Cards */}
+      {datasetSource === 'india-mp' && citySummary?.cities && citySummary.cities.length > 0 && (
+        <motion.div
+          className="city-summary-grid"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, ease: [0.4,0,0.2,1] }}
+        >
+          {citySummary.cities.map((city, idx) => {
+            const stateClass = city.congestion_state === 'Free Flow' ? 'free-flow' : city.congestion_state === 'Moderate' ? 'moderate' : 'congested';
+            return (
+              <motion.div
+                key={city.city}
+                className={`city-summary-card card ${stateClass}`}
+                onClick={() => {
+                  const ref = MP_REFERENCE_CITIES.find(c => c.name.startsWith(city.city));
+                  if (ref) handleSelectArea(ref);
+                }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, delay: idx * 0.05, ease: [0.4,0,0.2,1] }}
+                whileHover={{ y: -3, transition: { duration: 0.15 } }}
+              >
+                <div className="city-summary-header">
+                  <span className="city-summary-icon">{city.icon}</span>
+                  <span className="city-summary-name">{city.city}</span>
+                </div>
+                <div className="city-summary-speed">{city.avg_speed} mph</div>
+                <span className={`badge badge-${stateClass === 'free-flow' ? 'success' : stateClass === 'moderate' ? 'warning' : 'danger'}`}>
+                  {city.congestion_state}
+                </span>
+                <div className="city-summary-meta">
+                  {city.sensor_count} sensors • {city.congested_pct}% congested
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
+
       {/* KPI Cards Row */}
       <div className="status-grid">
-        <div className="status-card accent card">
-          <div className="status-value">{summary.total}</div>
-          <div className="status-label">Active Sensors</div>
-        </div>
-        <div className="status-card congested card">
-          <div className="status-value">{summary.congested}</div>
-          <div className="status-label">{horizon === 0 ? 'Congested Segments' : 'Predicted Congested'}</div>
-        </div>
-        <div className="status-card moderate card">
-          <div className="status-value">{summary.moderate}</div>
-          <div className="status-label">{horizon === 0 ? 'Moderate Segments' : 'Predicted Moderate'}</div>
-        </div>
-        <div className="status-card free-flow card">
-          <div className="status-value">{summary.free_flow}</div>
-          <div className="status-label">{horizon === 0 ? 'Free Flow Segments' : 'Predicted Free Flow'}</div>
-        </div>
-        <div className="status-card card" style={{ borderColor: 'rgba(0, 212, 255, 0.3)' }}>
-          <div className="status-value" style={{ fontSize: '1.6rem', color: 'var(--accent-primary)', fontWeight: 800 }}>
-            {stgcnMetrics?.mae != null ? stgcnMetrics.mae.toFixed(3) : 'Awaiting eval'}
+        {[
+          { cls: 'accent',    val: summary.total,      label: 'Active Sensors',  delay: 0    },
+          { cls: 'congested', val: summary.congested,  label: horizon === 0 ? 'Congested Segments' : 'Predicted Congested', delay: 0.05 },
+          { cls: 'moderate',  val: summary.moderate,   label: horizon === 0 ? 'Moderate Segments' : 'Predicted Moderate',  delay: 0.1  },
+          { cls: 'free-flow', val: summary.free_flow,  label: horizon === 0 ? 'Free Flow Segments' : 'Predicted Free Flow', delay: 0.15 },
+        ].map(({ cls, val, label, delay }) => (
+          <motion.div
+            key={label}
+            className={`status-card ${cls} card`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, delay, ease: [0.4,0,0.2,1] }}
+            whileHover={{ y: -2, transition: { duration: 0.12 } }}
+          >
+            <div className="status-value">{val}</div>
+            <div className="status-label">{label}</div>
+          </motion.div>
+        ))}
+        <motion.div
+          className="status-card card"
+          style={{ borderColor: 'rgba(0, 212, 255, 0.22)' }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.28, delay: 0.2, ease: [0.4,0,0.2,1] }}
+          whileHover={{ y: -2, transition: { duration: 0.12 } }}
+        >
+          <div className="status-value" style={{ fontSize: '1.55rem', color: 'var(--accent-primary)', fontWeight: 800, fontFamily: 'var(--font-mono)' }}>
+            {stgcnMetrics?.mae != null ? stgcnMetrics.mae.toFixed(3) : '—'}
           </div>
           <div className="status-label">STGCN MAE Metric</div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Controls Bar */}
@@ -549,23 +855,32 @@ export default function Dashboard({ demoMode }) {
                   <span>ℹ MP Coverage</span>
                   <span className="toggle-icon">{showCoverageOverlay ? '▲' : '▼'}</span>
                 </button>
-                
-                {showCoverageOverlay && (
-                  <div className="coverage-details">
-                    <div className="coverage-row">
-                      <span className="coverage-key">Geographic Coverage:</span>
-                      <span className="coverage-value cyan">Madhya Pradesh — 100%</span>
-                    </div>
-                    <div className="coverage-row">
-                      <span className="coverage-key">Active Demonstration Sensor Coverage:</span>
-                      <span className="coverage-value accent">5 cities</span>
-                    </div>
-                    <div className="coverage-row">
-                      <span className="coverage-key">Traffic Forecasting:</span>
-                      <span className="coverage-value green">Available at active sensors</span>
-                    </div>
-                  </div>
-                )}
+
+                <AnimatePresence initial={false}>
+                  {showCoverageOverlay && (
+                    <motion.div
+                      className="coverage-details"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2, ease: [0.4,0,0.2,1] }}
+                      style={{ overflow: 'hidden' }}
+                    >
+                      <div className="coverage-row">
+                        <span className="coverage-key">Geographic Coverage:</span>
+                        <span className="coverage-value cyan">Madhya Pradesh — 100%</span>
+                      </div>
+                      <div className="coverage-row">
+                        <span className="coverage-key">Active Sensor Coverage:</span>
+                        <span className="coverage-value accent">5 cities</span>
+                      </div>
+                      <div className="coverage-row">
+                        <span className="coverage-key">Traffic Forecasting:</span>
+                        <span className="coverage-value green">Available at active sensors</span>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -580,7 +895,12 @@ export default function Dashboard({ demoMode }) {
         </div>
 
         {/* Sensor Detail & Forecast Side Panel */}
-        <div className={`sensor-detail-panel card ${selectedSensor ? 'visible' : ''}`}>
+        <motion.div
+          className={`sensor-detail-panel card ${selectedSensor ? 'visible' : ''}`}
+          initial={{ opacity: 0, x: 16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.25, ease: [0.4,0,0.2,1] }}
+        >
           {forecast ? (
             <>
               <div className="card-header">
@@ -591,7 +911,7 @@ export default function Dashboard({ demoMode }) {
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ID: {forecast.sensor_id}</div>
                   {forecast.city && <div style={{ fontSize: '0.8rem', color: 'var(--accent-primary)', fontWeight: 600, marginTop: 2 }}>Location: {forecast.city}, Madhya Pradesh</div>}
                 </div>
-                <button className="btn btn-ghost btn-sm" onClick={() => { setSelectedSensor(null); setForecast(null); }}>✕</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => { setSelectedSensor(null); setForecast(null); setSimResult(null); clearSimMarkers(); }}>✕</button>
               </div>
 
               <div className="detail-grid">
@@ -633,40 +953,122 @@ export default function Dashboard({ demoMode }) {
                 <h4 style={{ margin: '0 0 2px', color: 'var(--text-primary)', fontSize: '0.9rem', fontWeight: 700 }}>
                   Predicted vs Actual Traffic Speed
                 </h4>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 12 }}>
-                  STGCN forecast performance for selected road segment
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: 8 }}>
+                  {Object.values(compareModels).filter(Boolean).length > 1
+                    ? 'Multi-model comparison view'
+                    : `${selectedModel.toUpperCase()} forecast performance for selected road segment`}
+                </div>
+
+                {/* Feature 1: Model Comparison Toggle */}
+                <div className="model-compare-group">
+                  {Object.entries(MODEL_COLORS).map(([key, mc]) => (
+                    <label key={key} className="model-compare-checkbox">
+                      <input
+                        type="checkbox"
+                        checked={compareModels[key]}
+                        onChange={(e) => setCompareModels(prev => ({ ...prev, [key]: e.target.checked }))}
+                      />
+                      <span className="model-compare-dot" style={{ background: mc.color }}></span>
+                      {mc.label}
+                    </label>
+                  ))}
                 </div>
 
                 <div className="mini-chart">
-                  {forecast.actual_vs_predicted && forecast.actual_vs_predicted.length > 0 ? (
-                    <svg viewBox="0 0 400 150" className="speed-chart-svg">
-                      {(() => {
-                        const data = forecast.actual_vs_predicted;
-                        const actuals = data.map(d => d.actual).filter(v => v != null);
-                        const allVals = [...actuals, ...data.map(d => d.predicted).filter(v => v != null)];
-                        const minV = Math.min(...allVals) - 5;
-                        const maxV = Math.max(...allVals) + 5;
-                        const range = maxV - minV || 1;
-                        const xStep = 400 / Math.max(data.length - 1, 1);
-
-                        const actualLine = data.map((d, i) => d.actual != null ? `${i * xStep},${150 - ((d.actual - minV) / range) * 140}` : null).filter(Boolean).join(' ');
-                        const predLine = data.map((d, i) => d.predicted != null ? `${i * xStep},${150 - ((d.predicted - minV) / range) * 140}` : null).filter(Boolean).join(' ');
-
-                        return (
-                          <>
-                            <polyline points={actualLine} fill="none" stroke="#00d4ff" strokeWidth="2.5" opacity="0.9"/>
-                            {predLine && <polyline points={predLine} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="6,4" opacity="0.9"/>}
-                          </>
-                        );
-                      })()}
-                    </svg>
-                  ) : <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>No trend data</p>}
+                  {renderComparisonChart()}
                   
                   <div className="chart-legend-inline">
                     <span><span style={{ color: '#00d4ff', fontWeight: 'bold' }}>━</span> Actual Speed</span>
-                    <span><span style={{ color: '#f59e0b', fontWeight: 'bold' }}>╌</span> Predicted Speed</span>
+                    {Object.values(compareModels).filter(Boolean).length > 1 ? (
+                      Object.entries(compareModels).filter(([, v]) => v).map(([key]) => (
+                        <span key={key}>
+                          <span style={{ color: MODEL_COLORS[key].color, fontWeight: 'bold' }}>╌</span> {MODEL_COLORS[key].label}
+                        </span>
+                      ))
+                    ) : (
+                      <span><span style={{ color: '#f59e0b', fontWeight: 'bold' }}>╌</span> Predicted Speed</span>
+                    )}
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.65rem' }}>░ Confidence Range</span>
                   </div>
                 </div>
+              </div>
+
+              {/* Feature 2: Disruption Simulator */}
+              <div className="disruption-section">
+                <h4 style={{ margin: '16px 0 8px', color: 'var(--text-secondary)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  ⚡ What-If Disruption Simulator
+                </h4>
+                {!simResult ? (
+                  <div className="disruption-controls">
+                    <select
+                      className="form-select"
+                      value={simDuration}
+                      onChange={(e) => setSimDuration(Number(e.target.value))}
+                      style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '0.75rem', flex: '0 0 auto' }}
+                    >
+                      <option value={30}>30 min propagation</option>
+                      <option value={60}>60 min propagation</option>
+                    </select>
+                    <button
+                      className="btn btn-sm disruption-btn"
+                      onClick={handleSimulate}
+                      disabled={simLoading}
+                    >
+                      {simLoading ? '⏳ Simulating...' : '⚠ Simulate Incident Here'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="disruption-result">
+                    <div className="disruption-summary">
+                      <span className="disruption-count">{simResult.total_affected}</span>
+                      <span>neighboring sensors affected ({simResult.duration_minutes} min propagation)</span>
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 8 }}>
+                      {simResult.propagation_note}
+                    </div>
+                    {simResult.affected_sensors.slice(0, 5).map(s => (
+                      <div key={s.sensor_id} className="disruption-affected-row">
+                        <span>{s.road_name}</span>
+                        <span style={{ color: s.projected_state === 'Congested' ? 'var(--congested)' : 'var(--moderate)' }}>
+                          {s.original_speed} → {s.reduced_speed} mph (−{s.speed_reduction_pct}%)
+                        </span>
+                      </div>
+                    ))}
+                    <button className="btn btn-sm btn-secondary" onClick={handleResetSimulation} style={{ marginTop: 8 }}>
+                      ↩ Reset Simulation
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Feature 3: Feature Importance Panel */}
+              <div className="fi-section">
+                <button
+                  className="fi-toggle-btn"
+                  onClick={() => setShowFeatureImportance(!showFeatureImportance)}
+                >
+                  <span>📊 Feature Importance ({selectedModel.toUpperCase()})</span>
+                  <span className="toggle-icon">{showFeatureImportance ? '▲' : '▼'}</span>
+                </button>
+                {showFeatureImportance && featureImportance?.features && (
+                  <div className="fi-bar-chart">
+                    {featureImportance.features.slice(0, 6).map((f, idx) => (
+                      <div key={idx} className="fi-bar-row">
+                        <span className="fi-bar-label">{f.feature}</span>
+                        <div className="fi-bar-track">
+                          <div
+                            className="fi-bar-fill"
+                            style={{ width: `${f.importance_pct}%` }}
+                          ></div>
+                        </div>
+                        <span className="fi-bar-value">{f.importance_pct}%</span>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 6 }}>
+                      Source: {featureImportance.source}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div style={{ marginTop: 12, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -682,7 +1084,7 @@ export default function Dashboard({ demoMode }) {
               </p>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
     </div>
   );

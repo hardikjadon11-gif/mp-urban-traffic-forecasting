@@ -34,5 +34,5 @@ ENV BACKEND_HOST=0.0.0.0
 
 EXPOSE 7860
 
-CMD ["sh", "-c", "python -m uvicorn backend.main:app --host 0.0.0.0 --port ${PORT}"]
+CMD ["sh", "-c", "python scripts/generate_demo_data.py && python -m uvicorn backend.main:app --host 0.0.0.0 --port ${PORT}"]
 

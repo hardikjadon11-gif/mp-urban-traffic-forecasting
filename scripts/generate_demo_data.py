@@ -237,14 +237,26 @@ def generate_uber_movement_data(n_zones: int = 50, n_days: int = 14, seed: int =
                 "destination_zone": f"ZONE_{dst:03d}",
                 "mean_travel_time_minutes": round(travel_time, 1),
             })
-
     return pd.DataFrame(records)
 
 
 def main():
-    """Generate all demo data files."""
+    """Generate all demo data files. Skips if files already exist (idempotent)."""
     demo_dir = PROJECT_ROOT / "data" / "demo"
     demo_dir.mkdir(parents=True, exist_ok=True)
+
+    # ── Idempotency check: skip if all key files are already present ───────
+    required_files = [
+        demo_dir / "demo_metr_la.h5",
+        demo_dir / "demo_pems_bay.h5",
+        demo_dir / "demo_india_mp.h5",
+        demo_dir / "india_mp_sensors.csv",
+        demo_dir / "metr_la_sensors.csv",
+        demo_dir / "pems_bay_sensors.csv",
+    ]
+    if all(f.exists() for f in required_files):
+        print("[generate_demo_data] All demo data files already present — skipping generation.")
+        return
 
     print("=" * 60)
     print("  Smart Traffic Forecasting — Demo Data Generator")

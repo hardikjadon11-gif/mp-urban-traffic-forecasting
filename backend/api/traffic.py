@@ -131,3 +131,87 @@ async def get_current_traffic(
         "demo_mode": app_state["demo_mode"],
         "total_timestamps": len(speeds_df),
     }
+
+
+@router.get("/traffic/city-summary")
+async def get_city_summary(
+    demo_time_index: Optional[int] = Query(None, description="Demo time index"),
+):
+    """
+    Get city-level traffic summary for Madhya Pradesh cities.
+    Returns average speed, congestion distribution, and sensor count per city.
+    """
+    from backend.main import app_state
+    from backend.config import get_congestion_label
+    import numpy as np
+
+    speeds_df = app_state.get("india_mp_speeds")
+    sensors_df = app_state.get("india_mp_sensors")
+
+    if speeds_df is None or sensors_df is None:
+        return {"cities": [], "demo_mode": True}
+
+    # Select time index
+    if demo_time_index is not None:
+        idx = min(demo_time_index, len(speeds_df) - 1)
+    else:
+        idx = len(speeds_df) - 1
+
+    timestamp = str(speeds_df.index[idx])
+    speeds_at_t = speeds_df.iloc[idx]
+
+    # Group sensors by city
+    city_data = {}
+    for _, sensor_row in sensors_df.iterrows():
+        sid = sensor_row["sensor_id"]
+        city = str(sensor_row.get("city", "Unknown")) if "city" in sensor_row.index else "Unknown"
+
+        if sid not in speeds_at_t.index:
+            continue
+
+        speed = float(speeds_at_t[sid])
+        if np.isnan(speed):
+            continue
+
+        if city not in city_data:
+            city_data[city] = {"speeds": [], "states": []}
+
+        city_data[city]["speeds"].append(speed)
+        city_data[city]["states"].append(get_congestion_label(speed))
+
+    # Build summary
+    city_icons = {
+        "Bhopal": "🏛️", "Indore": "🏙️", "Ujjain": "🛕",
+        "Gwalior": "🏰", "Jabalpur": "🌊",
+    }
+
+    cities = []
+    for city_name, data in city_data.items():
+        speeds = data["speeds"]
+        states = data["states"]
+        avg_speed = sum(speeds) / len(speeds)
+        congested_count = states.count("Congested")
+        moderate_count = states.count("Moderate")
+        free_count = states.count("Free Flow")
+
+        cities.append({
+            "city": city_name,
+            "icon": city_icons.get(city_name, "📍"),
+            "avg_speed": round(avg_speed, 1),
+            "congestion_state": get_congestion_label(avg_speed),
+            "sensor_count": len(speeds),
+            "congested": congested_count,
+            "moderate": moderate_count,
+            "free_flow": free_count,
+            "congested_pct": round(congested_count / len(speeds) * 100, 1),
+        })
+
+    # Sort: most congested cities first
+    cities.sort(key=lambda c: c["congested_pct"], reverse=True)
+
+    return {
+        "cities": cities,
+        "timestamp": timestamp,
+        "demo_mode": app_state["demo_mode"],
+    }
+

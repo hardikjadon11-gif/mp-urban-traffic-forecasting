@@ -18,8 +18,23 @@ venv/
 .venv/
 env/
 ENV/
+
+# SQLite database (runtime artifact — not source data)
+backend/*.db
+backend/*.sqlite3
 *.sqlite3
-*.db
+
+# ── IMPORTANT: data/demo/ files MUST be tracked by git ──────────────────
+# These generated files (.h5, .csv, .pkl) are the demo sensor dataset.
+# Render builds from GitHub, so they MUST be committed.
+# The lines below explicitly un-ignore them even if broad patterns above
+# would catch them.
+!data/
+!data/demo/
+!data/demo/*.h5
+!data/demo/*.csv
+!data/demo/*.pkl
+
 
 # IDE & System Files
 .vscode/

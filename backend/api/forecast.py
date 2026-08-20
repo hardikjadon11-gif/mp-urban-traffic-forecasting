@@ -10,6 +10,80 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+@router.get("/forecast/compare/{sensor_id}")
+async def get_multi_model_forecast(
+    sensor_id: str,
+    demo_time_index: Optional[int] = Query(None, description="Demo time index"),
+):
+    """
+    Get forecasts from all 3 models (XGBoost, LSTM, STGCN) for a single sensor.
+    Used by the model comparison toggle to overlay predictions on one chart.
+    """
+    from backend.main import app_state
+    from backend.config import get_congestion_label, SEQUENCE_LENGTH
+
+    # Find dataset
+    speeds_df = None
+    for src_key in ["india_mp", "metr_la", "pems_bay"]:
+        sensors_key = f"{src_key}_sensors"
+        speeds_key = f"{src_key}_speeds"
+        sdf = app_state.get(sensors_key)
+        if sdf is not None:
+            match = sdf[sdf["sensor_id"] == sensor_id]
+            if len(match) > 0:
+                speeds_df = app_state.get(speeds_key)
+                break
+
+    if speeds_df is None or sensor_id not in speeds_df.columns:
+        raise HTTPException(status_code=404, detail=f"Sensor '{sensor_id}' not found")
+
+    current_idx = min(demo_time_index, len(speeds_df) - 1) if demo_time_index is not None else len(speeds_df) - 1
+    current_speed = float(speeds_df[sensor_id].iloc[current_idx])
+
+    models_result = {}
+    for model_name in ["xgboost", "lstm", "stgcn"]:
+        trained_model = app_state["models"].get(model_name)
+        prediction = None
+
+        if trained_model and trained_model.is_trained:
+            try:
+                prediction = _predict_with_model(
+                    trained_model, model_name, speeds_df, sensor_id,
+                    current_idx, SEQUENCE_LENGTH
+                )
+            except Exception:
+                prediction = None
+
+        if prediction is not None:
+            p30 = float(prediction[0]) if len(prediction) > 0 else current_speed
+            p60 = float(prediction[1]) if len(prediction) > 1 else p30
+            source = f"{model_name} (trained)"
+        else:
+            p30, p60, source = _demo_forecast_for_model(
+                speeds_df, sensor_id, current_idx, model_name
+            )
+
+        comparison = _build_comparison_data(speeds_df, sensor_id, current_idx, p30, p60)
+        _add_confidence_band(comparison, speeds_df, sensor_id, current_idx, model_name)
+
+        models_result[model_name] = {
+            "predicted_30": round(p30, 1),
+            "predicted_60": round(p60, 1),
+            "congestion_30": get_congestion_label(p30),
+            "congestion_60": get_congestion_label(p60),
+            "source": source,
+            "actual_vs_predicted": comparison,
+        }
+
+    return {
+        "sensor_id": sensor_id,
+        "current_speed": round(current_speed, 1),
+        "current_congestion": get_congestion_label(current_speed),
+        "models": models_result,
+        "demo_mode": app_state["demo_mode"],
+    }
+
+
 @router.get("/forecast/{sensor_id}")
 async def get_forecast(
     sensor_id: str,
@@ -100,11 +174,30 @@ async def get_forecast(
         speeds_df, sensor_id, current_idx, pred_30, pred_60
     )
 
+    # Add confidence band to each data point
+    _add_confidence_band(actual_vs_predicted, speeds_df, sensor_id, current_idx)
+
+    # Get sensor metadata for response enrichment
+    sensor_meta = {}
+    for src_key in ["india_mp_sensors", "metr_la_sensors", "pems_bay_sensors"]:
+        sdf = app_state.get(src_key)
+        if sdf is not None:
+            match = sdf[sdf["sensor_id"] == sensor_id]
+            if len(match) > 0:
+                row = match.iloc[0]
+                sensor_meta["road_name"] = str(row.get("road_name", sensor_id))
+                sensor_meta["city"] = str(row.get("city", "")) if "city" in row.index else None
+                sensor_meta["name"] = str(row.get("name", sensor_id))
+                break
+
     return {
         "sensor_id": sensor_id,
         "current_timestamp": current_timestamp,
         "current_speed": round(current_speed, 1),
         "current_congestion": get_congestion_label(current_speed),
+        "road_name": sensor_meta.get("road_name", sensor_id),
+        "city": sensor_meta.get("city"),
+        "name": sensor_meta.get("name", sensor_id),
         "forecasts": {
             "30_min": {
                 "predicted_speed": round(pred_30, 1),
@@ -189,6 +282,31 @@ def _demo_forecast(speeds_df, sensor_id, current_idx):
     return pred_30, pred_60, "demo (future values + noise)"
 
 
+def _demo_forecast_for_model(speeds_df, sensor_id, current_idx, model_name):
+    """Generate model-specific demo forecast with distinct noise signatures."""
+    idx_30 = min(current_idx + 2, len(speeds_df) - 1)
+    idx_60 = min(current_idx + 4, len(speeds_df) - 1)
+
+    actual_30 = float(speeds_df[sensor_id].iloc[idx_30])
+    actual_60 = float(speeds_df[sensor_id].iloc[idx_60])
+
+    # Each model gets a different seed offset for distinct demo predictions
+    model_offset = {"xgboost": 1000, "lstm": 2000, "stgcn": 3000}.get(model_name, 0)
+    np.random.seed(current_idx + model_offset)
+
+    # Different noise levels per model (STGCN most accurate, XGBoost noisiest)
+    noise_scale = {"xgboost": (2.5, 4.0), "lstm": (2.0, 3.0), "stgcn": (1.5, 2.5)}
+    n30_scale, n60_scale = noise_scale.get(model_name, (1.5, 2.5))
+
+    noise_30 = np.random.normal(0, n30_scale)
+    noise_60 = np.random.normal(0, n60_scale)
+
+    pred_30 = max(5, actual_30 + noise_30)
+    pred_60 = max(5, actual_60 + noise_60)
+
+    return pred_30, pred_60, f"demo ({model_name})"
+
+
 def _build_comparison_data(speeds_df, sensor_id, current_idx, pred_30, pred_60):
     """Build actual vs predicted comparison for charting."""
     # Historical actual values (last 24 entries = ~6 hours at 15min)
@@ -212,3 +330,32 @@ def _build_comparison_data(speeds_df, sensor_id, current_idx, pred_30, pred_60):
         data_points.append(point)
 
     return data_points
+
+
+def _add_confidence_band(data_points, speeds_df, sensor_id, current_idx,
+                          model_name="stgcn"):
+    """
+    Add confidence band (upper/lower) to each data point.
+    Uses historical residual std to estimate ± uncertainty margin.
+    """
+    # Compute residual std from recent history
+    lookback = min(50, current_idx)
+    if lookback < 5:
+        margin = 3.0
+    else:
+        recent = speeds_df[sensor_id].iloc[max(0, current_idx - lookback):current_idx + 1]
+        margin = float(recent.std()) * 0.8  # ~80% of 1-sigma as confidence margin
+        margin = max(1.5, min(margin, 8.0))  # Clamp to reasonable range
+
+    # Model-specific confidence width (STGCN tightest, XGBoost widest)
+    model_scale = {"xgboost": 1.4, "lstm": 1.2, "stgcn": 1.0}.get(model_name, 1.0)
+
+    for i, point in enumerate(data_points):
+        if "predicted" in point and point["predicted"] is not None:
+            pred = point["predicted"]
+            # Confidence grows with forecast distance
+            is_forecast = i >= len(data_points) - 5
+            distance_factor = 1.0 + (0.3 if is_forecast else 0)
+            band = margin * model_scale * distance_factor
+            point["predicted_upper"] = round(pred + band, 1)
+            point["predicted_lower"] = round(max(0, pred - band), 1)

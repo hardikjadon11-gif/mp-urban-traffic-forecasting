@@ -41,12 +41,41 @@ export const api = {
     return fetchApi(url);
   },
 
+  // City Summary (India MP)
+  getCitySummary: (demoTimeIndex) => {
+    let url = '/traffic/city-summary';
+    if (demoTimeIndex !== undefined) url += `?demo_time_index=${demoTimeIndex}`;
+    return fetchApi(url);
+  },
+
   // Forecast
   getForecast: (sensorId, model = 'stgcn', demoTimeIndex) => {
     let url = `/forecast/${sensorId}?model=${model}`;
     if (demoTimeIndex !== undefined) url += `&demo_time_index=${demoTimeIndex}`;
     return fetchApi(url);
   },
+
+  // Multi-Model Forecast Comparison
+  getMultiModelForecast: (sensorId, demoTimeIndex) => {
+    let url = `/forecast/compare/${sensorId}`;
+    if (demoTimeIndex !== undefined) url += `?demo_time_index=${demoTimeIndex}`;
+    return fetchApi(url);
+  },
+
+  // Feature Importance
+  getFeatureImportance: (sensorId, model = 'stgcn', demoTimeIndex) => {
+    let url = `/feature-importance/${sensorId}?model=${model}`;
+    if (demoTimeIndex !== undefined) url += `&demo_time_index=${demoTimeIndex}`;
+    return fetchApi(url);
+  },
+
+  // Disruption Simulation
+  simulateDisruption: (sensorId, durationMinutes = 30, source = 'india-mp', demoTimeIndex) => {
+    let url = `/simulate/disruption?sensor_id=${sensorId}&duration_minutes=${durationMinutes}&source=${source}`;
+    if (demoTimeIndex !== undefined) url += `&demo_time_index=${demoTimeIndex}`;
+    return fetchApi(url, { method: 'POST' });
+  },
+  resetSimulation: () => fetchApi('/simulate/reset', { method: 'POST' }),
 
   // Training
   startTraining: (config) => fetchApi('/train', {
